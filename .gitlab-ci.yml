@@ -1,0 +1,66 @@
+variables:
+  GIT_STRATEGY: fetch
+  GIT_DEPTH: 1
+  RULES_CHANGES_PATH: '**/*'
+
+before_script:
+  - PACKAGE_VERSION=$(grep version api/package.json | awk -F \" '{print $4}')
+
+services:
+  - docker:dind
+
+stages:
+  - setup
+  - build
+  - deploy
+
+.base-rules:
+  tags:
+    - buildbox-e9-sg:20.04.X
+
+# .frontend:
+#   extends: .base-rules
+#   variables:
+#     RULES_CHANGES_PATH: 'packages/bizman-fe/**/*'
+
+# include:
+#   - local: 'packages/bizman-be/.gitlab-ci.yml'
+backend-setup:
+  tags:
+    - buildbox-e9-sg:20.04.X
+  only:
+    refs:
+      - link-to-vn
+  image: node:20-alpine
+  stage: setup
+  script:
+    - echo $PACKAGE_VERSION
+    - npx pnpm install
+    - npx pnpm build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+# backend-build:
+#   image: docker:20-dind
+#   extends: .backend
+#   services:
+#     - name: docker:20-dind
+#       alias: docker
+#       command: ['--tls=false']
+#   variables:
+#     DOCKER_DRIVER: overlay2
+#     DOCKER_HOST: tcp://docker:2375
+#     DOCKER_TLS_CERTDIR: ''
+#   stage: build
+#   dependencies:
+#     - backend-setup
+#   artifacts:
+#     paths:
+#       - dist/
+#   script:
+#     - cp ./packages/bizman-be/Dockerfile ./dist/packages/bizman-be/Dockerfile
+#     - cd ./dist/packages/bizman-be
+#     - docker login -u $DOCKER_USERNAME -p $GITLAB_CI_TOKEN $DOCKER_REGISTRY
+#     - docker build -t $DOCKER_REGISTRY/e9.digital/bizman/bizman-be:$PACKAGE_VERSION .
+#     - docker push $DOCKER_REGISTRY/e9.digital/bizman/bizman-be:$PACKAGE_VERSION

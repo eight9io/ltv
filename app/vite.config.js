@@ -8,6 +8,7 @@ import path from 'node:path';
 import { searchForWorkspaceRoot } from 'vite';
 import { defineConfig } from 'vitest/config';
 
+
 const API_PATH = path.join('..', 'api');
 
 /*
