@@ -10,18 +10,18 @@ env:
   DOCKERHUB_IMAGE: ${{ github.repository }}
 
 jobs:
-  check-version:
-    name: Check Version
-    runs-on: ubuntu-latest
-    outputs:
-      prerelease: ${{ steps.version.outputs.prerelease && true || false }}
-    steps:
-      - name: Check version
-        uses: madhead/semver-utils@v4
-        id: version
-        with:
-          version: ${{ github.ref_name }}
-          lenient: false
+  # check-version:
+  #   name: Check Version
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     prerelease: ${{ steps.version.outputs.prerelease && true || false }}
+  #   steps:
+  #     - name: Check version
+  #       uses: madhead/semver-utils@v4
+  #       id: version
+  #       with:
+  #         version: ${{ github.ref_name }}
+  #         lenient: false
 
   # create-release:
   #   name: Create Release
